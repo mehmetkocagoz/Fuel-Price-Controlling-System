@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"mehmetkocagz/datascrape"
 )
 
 func main() {
-	price := datascrape.GetBrentOilPrices()
-	fmt.Println(price)
+	priceList := datascrape.GetBrentOilPrices()
+	datascrape.InsertBrentOilPrices(priceList)
 }

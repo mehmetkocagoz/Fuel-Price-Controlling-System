@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"mehmetkocagz/database"
 	"net/http"
 )
 
@@ -49,4 +50,16 @@ func GetBrentOilPrices() []BrentOilPrice {
 	}
 
 	return priceStruct
+}
+
+func InsertBrentOilPrices(priceList []BrentOilPrice) {
+	database := database.Connect()
+	defer database.Close()
+	insertQuery := `INSERT INTO brentoil (timestamp, price) VALUES ($1, $2)`
+	for v := range priceList {
+		_, err := database.Exec(insertQuery, priceList[v].Timestamp, priceList[v].Price)
+		if err != nil {
+			fmt.Println("Insert has failed: ", err)
+		}
+	}
 }
