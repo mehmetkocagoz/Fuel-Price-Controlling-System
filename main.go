@@ -5,6 +5,8 @@ import (
 )
 
 func main() {
-	priceList := datascrape.GetBrentOilPrices()
-	datascrape.InsertBrentOilPrices(priceList)
+	/*
+		priceList := datascrape.GetBrentOilPrices()
+		datascrape.InsertBrentOilPrices(priceList)*/
+	datascrape.ScrapeDateAndFuelPrices(*datascrape.GetFuelPrices())
 }
