@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	dbname   = "brentoilprices"
+	dbname   = "brentoil"
 	user     = "postgres"
 	password = "123456"
 	host     = "localhost"
