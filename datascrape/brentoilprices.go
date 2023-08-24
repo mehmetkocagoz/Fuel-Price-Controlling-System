@@ -76,7 +76,7 @@ func InsertBrentOilPrices(priceList []BrentOilPrice) {
 	if lastRow.Timestamp == lastRowPriceList.Timestamp {
 		fmt.Println("There is no new data to insert.")
 	} else {
-		insertQuery := `INSERT INTO brentoilprices (timestamp, price) VALUES ($1, $2)`
+		insertQuery := `INSERT INTO pricedata (timestamp, price) VALUES ($1, $2)`
 		for v := range priceList {
 			_, err := database.Exec(insertQuery, priceList[v].Timestamp, priceList[v].Price)
 			if err != nil {

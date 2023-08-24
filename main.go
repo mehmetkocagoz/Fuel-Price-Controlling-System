@@ -8,5 +8,5 @@ func main() {
 	/*
 		priceList := datascrape.GetBrentOilPrices()
 		datascrape.InsertBrentOilPrices(priceList)*/
-	datascrape.ScrapeDateAndFuelPrices(*datascrape.GetFuelPrices())
+	datascrape.InsertFuelPrices(datascrape.ScrapeDateAndFuelPrices(*datascrape.GetFuelPrices()))
 }
