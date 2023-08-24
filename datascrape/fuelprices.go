@@ -2,10 +2,16 @@ package datascrape
 
 import (
 	"fmt"
+	"mehmetkocagz/database"
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
 )
+
+type FuelPrice struct {
+	Date   string
+	Diesel string
+}
 
 // Get fuel prices from tppd.com.tr
 // This function will just return the fuel prices as a document.
@@ -25,7 +31,8 @@ func GetFuelPrices() *goquery.Document {
 	return doc
 }
 
-func ScrapeDateAndFuelPrices(doc goquery.Document) {
+func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
+	var fuelPrices []FuelPrice
 	var date string
 	var diesel string
 	doc.Find("table tr").Each(func(i int, s *goquery.Selection) {
@@ -36,9 +43,44 @@ func ScrapeDateAndFuelPrices(doc goquery.Document) {
 			if i == 0 {
 				date = s.Text()
 			} else if i == 4 {
+				// Assume there is no error.
+				// We can handle it later.
 				diesel = s.Text()
 			}
 		})
-		fmt.Println(date, diesel)
+		fuelPrices = append(fuelPrices, FuelPrice{date, diesel})
 	})
+	return fuelPrices
+}
+
+// TODO: Insert fuel prices to database.
+func InsertFuelPrices(dataList []FuelPrice) {
+	//When examining the data from the website, I noticed that the data isn't updated
+	//on a daily basis; instead, it is updated whenever new data arrives. Since I want to
+	//utilize the daily price changes
+	//I'm going to insert the data into the database on a daily basis.
+	//I will apply pricing policies for days that are not listed based on the previous data.
+	//I will also apply pricing policies for days that are listed but have no data.
+	//In the beginning, it will be one time job so I'm not going to afraid of performance issues.
+	db := database.Connect()
+	defer db.Close()
+
+	// Take each row from the database
+	rows, err := db.Query("SELECT * from pricedata")
+	if err != nil {
+		fmt.Println("Query has failed: ", err)
+	}
+	defer rows.Close()
+	i := 0
+	for rows.Next() {
+		var date string
+		var diesel string
+		err = rows.Scan(&date, "", &diesel)
+		if err != nil {
+			fmt.Println("Scan has failed: ", err)
+		}
+		if date == dataList[i].Date {
+
+		}
+	}
 }
