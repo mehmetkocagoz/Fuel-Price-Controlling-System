@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mehmetkocagz/database"
 	"net/http"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -53,6 +54,15 @@ func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
 	return fuelPrices
 }
 
+func convertTimestamp(date string) int64 {
+	layout := "01-02-2006"
+	t, err := time.Parse(layout, date)
+	if err != nil {
+		fmt.Println("time.Parse has failed: ", err)
+	}
+	return t.Unix() * 1000
+}
+
 // TODO: Insert fuel prices to database.
 func InsertFuelPrices(dataList []FuelPrice) {
 	//When examining the data from the website, I noticed that the data isn't updated
@@ -73,14 +83,20 @@ func InsertFuelPrices(dataList []FuelPrice) {
 	defer rows.Close()
 	i := 0
 	for rows.Next() {
-		var date string
-		var diesel string
-		err = rows.Scan(&date, "", &diesel)
+		var date int64
+		var brent float64
+		var diesel float64
+		err = rows.Scan(&date, &brent, &diesel)
 		if err != nil {
 			fmt.Println("Scan has failed: ", err)
 		}
-		if date == dataList[i].Date {
-
+		for (convertTimestamp(dataList[i].Date) < date) && (convertTimestamp(dataList[i].Date) > date) {
+			_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
+			rows.Next()
+			if err != nil {
+				fmt.Println("Insert has failed: ", err)
+			}
 		}
+		i++
 	}
 }
