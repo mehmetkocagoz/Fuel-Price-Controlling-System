@@ -26,10 +26,19 @@ func GetFuelPrices() *goquery.Document {
 }
 
 func ScrapeDateAndFuelPrices(doc goquery.Document) {
-	doc.Find("table").Each(func(i int, s *goquery.Selection) {
-		s.Find("tr").Each(func(i int, s *goquery.Selection) {
-			s.Find("td")
-
+	var date string
+	var diesel string
+	doc.Find("table tr").Each(func(i int, s *goquery.Selection) {
+		s.Find("td").Each(func(i int, s *goquery.Selection) {
+			// As I know how data table structered I can get the data I want.
+			// I'm going to get the date and DIESEL prices only.
+			// This function can be improved.
+			if i == 0 {
+				date = s.Text()
+			} else if i == 4 {
+				diesel = s.Text()
+			}
 		})
+		fmt.Println(date, diesel)
 	})
 }
