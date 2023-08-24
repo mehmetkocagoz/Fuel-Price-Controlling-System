@@ -62,23 +62,23 @@ func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
 func switchMonthToNumber(month string) string {
 	switch month {
 	case "January":
-		return "1"
+		return "01"
 	case "february":
-		return "2"
+		return "02"
 	case "March":
-		return "3"
+		return "03"
 	case "April":
-		return "4"
+		return "04"
 	case "May":
-		return "5"
+		return "05"
 	case "June":
-		return "6"
+		return "06"
 	case "July":
-		return "7"
+		return "07"
 	case "August":
-		return "8"
+		return "08"
 	case "September":
-		return "9"
+		return "09"
 	case "October":
 		return "10"
 	case "November":
@@ -95,8 +95,8 @@ func convertTimestamp(date string) int64 {
 	// So first I'm going to convert it to int-int-int format.
 	parsedDate := strings.Split(date, " ")
 	month := switchMonthToNumber(parsedDate[1])
-	date = parsedDate[0] + month + parsedDate[2]
-	layout := "02 1 2005"
+	date = parsedDate[2] + "-" + month + "-" + parsedDate[0]
+	layout := "2006-01-02"
 	t, err := time.Parse(layout, date)
 
 	if err != nil {
