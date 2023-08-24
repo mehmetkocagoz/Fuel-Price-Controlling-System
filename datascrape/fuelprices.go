@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"mehmetkocagz/database"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 type FuelPrice struct {
-	Date   string
-	Diesel string
+	Date   int64
+	Diesel float64
 }
 
 // Get fuel prices from tppd.com.tr
@@ -34,19 +36,22 @@ func GetFuelPrices() *goquery.Document {
 
 func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
 	var fuelPrices []FuelPrice
-	var date string
-	var diesel string
+	var date int64
+	var diesel float64
 	doc.Find("table tr").Each(func(i int, s *goquery.Selection) {
 		s.Find("td").Each(func(i int, s *goquery.Selection) {
 			// As I know how data table structered I can get the data I want.
 			// I'm going to get the date and DIESEL prices only.
 			// This function can be improved.
 			if i == 0 {
-				date = s.Text()
+				// Date will come to us as string. 13 May 2019
+				// I'm going to convert it to int64.
+				date = convertTimestamp(s.Text())
+
 			} else if i == 4 {
 				// Assume there is no error.
 				// We can handle it later.
-				diesel = s.Text()
+				diesel, _ = strconv.ParseFloat(s.Text(), 64)
 			}
 		})
 		fuelPrices = append(fuelPrices, FuelPrice{date, diesel})
@@ -54,13 +59,50 @@ func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
 	return fuelPrices
 }
 
+func switchMonthToNumber(month string) string {
+	switch month {
+	case "January":
+		return "1"
+	case "february":
+		return "2"
+	case "March":
+		return "3"
+	case "April":
+		return "4"
+	case "May":
+		return "5"
+	case "June":
+		return "6"
+	case "July":
+		return "7"
+	case "August":
+		return "8"
+	case "September":
+		return "9"
+	case "October":
+		return "10"
+	case "November":
+		return "11"
+	case "December":
+		return "12"
+	}
+	return "0"
+}
+
 func convertTimestamp(date string) int64 {
-	layout := "01-02-2006"
+	fmt.Println("converting..", date)
+	// I know that our date will come like int string int format.
+	// So first I'm going to convert it to int-int-int format.
+	parsedDate := strings.Split(date, " ")
+	month := switchMonthToNumber(parsedDate[1])
+	date = parsedDate[0] + month + parsedDate[2]
+	layout := "02 1 2005"
 	t, err := time.Parse(layout, date)
+
 	if err != nil {
 		fmt.Println("time.Parse has failed: ", err)
 	}
-	return t.Unix() * 1000
+	return (t.Unix() * 1000)
 }
 
 // TODO: Insert fuel prices to database.
@@ -90,7 +132,8 @@ func InsertFuelPrices(dataList []FuelPrice) {
 		if err != nil {
 			fmt.Println("Scan has failed: ", err)
 		}
-		for (convertTimestamp(dataList[i].Date) < date) && (convertTimestamp(dataList[i].Date) > date) {
+
+		for (dataList[i].Date < date) && (dataList[i].Date > date) {
 			_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
 			rows.Next()
 			if err != nil {
