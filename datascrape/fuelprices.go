@@ -38,7 +38,7 @@ func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
 	var fuelPrices []FuelPrice
 	var date int64
 	var diesel float64
-	doc.Find("table tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find("table tr").Each(func(a int, s *goquery.Selection) {
 		s.Find("td").Each(func(i int, s *goquery.Selection) {
 			// As I know how data table structered I can get the data I want.
 			// I'm going to get the date and DIESEL prices only.
@@ -47,15 +47,35 @@ func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
 				// Date will come to us as string. 13 May 2019
 				// I'm going to convert it to int64.
 				date = convertTimestamp(s.Text())
-
 			} else if i == 4 {
 				// Assume there is no error.
 				// We can handle it later.
-				diesel, _ = strconv.ParseFloat(s.Text(), 64)
+				// s.Text() has white spaces at the end of the string.
+				// I'm going to trim it.
+				dieselString := strings.TrimSpace(s.Text())
+				// I'm going to convert it to float64.
+				diesel, _ = strconv.ParseFloat(dieselString, 64)
+
 			}
 		})
+
 		fuelPrices = append(fuelPrices, FuelPrice{date, diesel})
 	})
+	// fuelPrices has the data from 2008
+	// I'm going to remove the data before August 2018.
+	// I'm going to use the data from August 2018.
+	// 1534550400000 18 August 2018
+	indexOfStartingDate := 0
+	for range fuelPrices {
+		if fuelPrices[indexOfStartingDate].Date > 1534550400000 {
+			fuelPrices = fuelPrices[indexOfStartingDate:]
+			fmt.Println("Success")
+			break
+		} else {
+			indexOfStartingDate++
+		}
+	}
+	fmt.Println(fuelPrices)
 	return fuelPrices
 }
 
@@ -63,7 +83,7 @@ func switchMonthToNumber(month string) string {
 	switch month {
 	case "January":
 		return "01"
-	case "february":
+	case "February":
 		return "02"
 	case "March":
 		return "03"
@@ -90,7 +110,7 @@ func switchMonthToNumber(month string) string {
 }
 
 func convertTimestamp(date string) int64 {
-	fmt.Println("converting..", date)
+	//fmt.Println("converting..", date)
 	// I know that our date will come like int string int format.
 	// So first I'm going to convert it to int-int-int format.
 	parsedDate := strings.Split(date, " ")
@@ -134,12 +154,14 @@ func InsertFuelPrices(dataList []FuelPrice) {
 		}
 
 		for (dataList[i].Date < date) && (dataList[i].Date > date) {
+
 			_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
 			rows.Next()
 			if err != nil {
 				fmt.Println("Insert has failed: ", err)
 			}
 		}
+
 		i++
 	}
 }
