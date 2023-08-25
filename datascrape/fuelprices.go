@@ -137,7 +137,7 @@ func InsertFuelPrices(dataList []FuelPrice) {
 	defer db.Close()
 
 	// Take each row from the database
-	rows, err := db.Query("SELECT * from pricedata")
+	rows, err := db.Query("SELECT * from pricedata ORDER BY timestamp ASC")
 	if err != nil {
 		fmt.Println("Query has failed: ", err)
 	}
@@ -151,14 +151,24 @@ func InsertFuelPrices(dataList []FuelPrice) {
 		if err != nil {
 			fmt.Println("Scan has failed: ", err)
 		}
-		if (dataList[i].Date < date) && (dataList[i+1].Date > date) {
+		if i+1 < len(dataList) {
+			if (dataList[i].Date <= date) && (dataList[i+1].Date > date) {
+				_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
+				if err != nil {
+					fmt.Println("Insert has failed: ", err)
+				}
+			} else {
+				i++
+				_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
+				if err != nil {
+					fmt.Println("Insert has failed: ", err)
+				}
+			}
+		} else if i+1 == len(dataList) {
 			_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
-			rows.Next()
 			if err != nil {
 				fmt.Println("Insert has failed: ", err)
 			}
-		} else {
-			i++
 		}
 	}
 }
