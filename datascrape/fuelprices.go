@@ -68,14 +68,13 @@ func ScrapeDateAndFuelPrices(doc goquery.Document) []FuelPrice {
 	indexOfStartingDate := 0
 	for range fuelPrices {
 		if fuelPrices[indexOfStartingDate].Date > 1534550400000 {
-			fuelPrices = fuelPrices[indexOfStartingDate:]
+			fuelPrices = fuelPrices[indexOfStartingDate-1:]
 			fmt.Println("Success")
 			break
 		} else {
 			indexOfStartingDate++
 		}
 	}
-	fmt.Println(fuelPrices)
 	return fuelPrices
 }
 
@@ -152,16 +151,14 @@ func InsertFuelPrices(dataList []FuelPrice) {
 		if err != nil {
 			fmt.Println("Scan has failed: ", err)
 		}
-
-		for (dataList[i].Date < date) && (dataList[i].Date > date) {
-
+		if (dataList[i].Date < date) && (dataList[i+1].Date > date) {
 			_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
 			rows.Next()
 			if err != nil {
 				fmt.Println("Insert has failed: ", err)
 			}
+		} else {
+			i++
 		}
-
-		i++
 	}
 }
