@@ -17,6 +17,4 @@ func databaseFiller() {
 }
 
 func main() {
-
-	datascrape.InsertFuelPrices(datascrape.ScrapeDateAndFuelPrices(*datascrape.GetFuelPrices()))
 }
