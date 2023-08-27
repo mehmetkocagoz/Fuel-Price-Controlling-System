@@ -53,20 +53,41 @@ func GetBrentOilPrices() []BrentOilPrice {
 }
 
 // Insert brent oil prices to database
+// This function only used for the first time.
 func InsertBrentOilPrices(priceList []BrentOilPrice) {
 	database := database.Connect()
 	defer database.Close()
-	/*I don't want to insert same data over and over every time I run the program.
-		So I'm going to check the last row in the database and the last row in the priceList.
-	    If the last row in the database is the same as the last row in the priceList
-		then I'm not going to insert anything.
-		If the last row in the database is not the same as the last row in the priceList
-		then I'm going to insert the data.
-	*/
+	{
+		insertQuery := `INSERT INTO pricedata (timestamp, brentoilprice) VALUES ($1, $2)`
+		for v := range priceList {
+			fmt.Println(v, priceList[v].Timestamp, priceList[v].Price)
+			_, err := database.Exec(insertQuery, priceList[v].Timestamp, priceList[v].Price)
+			if err != nil {
+				fmt.Println("Insert has failed: ", err)
 
-	/*// Get the last row in the database
+			}
+		}
+	}
+}
+
+/*
+I don't want to insert same data over and over every time I run the program.
+So I'm going to check the last row in the database and the last row in the priceList.
+If the last row in the database is the same as the last row in the priceList
+then I'm not going to insert data.
+If the last row in the database is not the same as the last row in the priceList
+then I'm going to insert the data.
+*/
+func InsertNewBrentOilPrices() {
+	// Get the price list
+	priceList := GetBrentOilPrices()
+
+	database := database.Connect()
+	defer database.Close()
+
+	// Get the last row in the database
 	var lastRow BrentOilPrice
-	err := database.QueryRow("SELECT timestamp, price FROM brentoil ORDER BY timestamp DESC LIMIT 1").Scan(&lastRow.Timestamp, &lastRow.Price)
+	err := database.QueryRow("SELECT timestamp FROM brentoil ORDER BY timestamp DESC LIMIT 1").Scan(&lastRow.Timestamp)
 	if err != nil {
 		fmt.Println("Query has failed: ", err)
 	}
@@ -75,16 +96,6 @@ func InsertBrentOilPrices(priceList []BrentOilPrice) {
 	// Checking if the last row in the database is the same as the last row in the priceList
 	if lastRow.Timestamp == lastRowPriceList.Timestamp {
 		fmt.Println("There is no new data to insert.")
-	} else {*/
-	insertQuery := `INSERT INTO pricedata (timestamp, brentoilprice) VALUES ($1, $2)`
-	for v := range priceList {
-		fmt.Println(v, priceList[v].Timestamp, priceList[v].Price)
-		_, err := database.Exec(insertQuery, priceList[v].Timestamp, priceList[v].Price)
-		if err != nil {
-			fmt.Println("Insert has failed: ", err)
-
-		}
+	} else {
 	}
 }
-
-//}
