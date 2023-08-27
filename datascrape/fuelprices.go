@@ -124,7 +124,12 @@ func convertTimestamp(date string) int64 {
 	return (t.Unix() * 1000)
 }
 
-// TODO: Insert fuel prices to database.
+// TODO: Update fuel prices to database.
+// pricedata table has fuelprice column.
+// In default, fuelprice column is 0.
+// I'm going to update the fuelprice column with the data I get from tppd.com.tr
+// Maybe later, I can add a new function that updates fuelprices only if the data is new.
+// But now, This function will update table's every row every time I run the program.
 func InsertFuelPrices(dataList []FuelPrice) {
 	//When examining the data from the website, I noticed that the data isn't updated
 	//on a daily basis; instead, it is updated whenever new data arrives. Since I want to
@@ -156,13 +161,13 @@ func InsertFuelPrices(dataList []FuelPrice) {
 			if (dataList[i].Date <= date) && (dataList[i+1].Date > date) {
 				_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
 				if err != nil {
-					fmt.Println("Insert has failed: ", err)
+					fmt.Println("Update has failed: ", err)
 				}
 			} else {
 				i++
 				_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[i].Diesel, date)
 				if err != nil {
-					fmt.Println("Insert has failed: ", err)
+					fmt.Println("Update has failed: ", err)
 				}
 			}
 		} else if i+1 == len(dataList) {
