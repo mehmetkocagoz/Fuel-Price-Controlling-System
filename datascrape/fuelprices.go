@@ -147,7 +147,8 @@ func InsertFuelPrices(dataList []FuelPrice) {
 		var date int64
 		var brent float64
 		var diesel float64
-		err = rows.Scan(&date, &brent, &diesel)
+		var dateStr string
+		err = rows.Scan(&date, &brent, &diesel, &dateStr)
 		if err != nil {
 			fmt.Println("Scan has failed: ", err)
 		}
