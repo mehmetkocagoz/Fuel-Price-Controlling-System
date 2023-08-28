@@ -14,7 +14,13 @@ func databaseFiller() {
 	doc := datascrape.GetFuelPrices()
 	// Insert fuel prices to database
 	datascrape.InsertFuelPrices(datascrape.ScrapeDateAndFuelPrices(*doc))
+	// Update usd exchange rate
+	datascrape.UpdateUSDExchangeRate()
 }
-
+func databaseUpdater() {
+	// First insert new brent oil prices
+	datascrape.InsertNewBrentOilPrices()
+}
 func main() {
+	databaseUpdater()
 }
