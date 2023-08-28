@@ -121,7 +121,10 @@ func convertTimestamp(date string) int64 {
 	if err != nil {
 		fmt.Println("time.Parse has failed: ", err)
 	}
-	return (t.Unix() * 1000)
+	// 10800000 is 3 hours in milliseconds.
+	// I'm going to subtract it from the timestamp.
+	// Because the data I get from tppd.com.tr is 3 hours ahead of the data I get from bloomberght.com
+	return (t.Unix()*1000 - 10800000)
 }
 
 // TODO: Update fuel prices to database.
