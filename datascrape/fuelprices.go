@@ -183,18 +183,19 @@ func InsertFuelPrices(dataList []FuelPrice) {
 	}
 }
 func InsertNewFuelPrices() {
+	// Connect to database
 	db := database.Connect()
 	defer db.Close()
 	// Get the price list
 	dataList := ScrapeDateAndFuelPrices(*GetFuelPrices())
-	// Take
+	// Count the number of rows that has fuelprice = 0
 	var count int
 	err := db.QueryRow("SELECT COUNT(*) from pricedata WHERE fuelprice=0").Scan(&count)
 	if err != nil {
 		fmt.Println("Query has failed: ", err)
 	}
+	// Take each row from the database
 	rows, err := db.Query("SELECT * from pricedata WHERE fuelprice=0 ORDER BY timestamp ASC")
-
 	for rows.Next() {
 		var timestamp int64
 		var brent float64
@@ -205,14 +206,19 @@ func InsertNewFuelPrices() {
 		if err != nil {
 			fmt.Println("Scan has failed: ", err)
 		}
+		// If there is only one row that has fuelprice = 0
+		// I'm going to update it with the last data I get from tppd.com.tr
 		if count == 1 {
 			_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[len(dataList)-1].Diesel, timestamp)
 			if err != nil {
 				fmt.Println("Update has failed: ", err)
 			}
-			fmt.Println("New data's fuel price has been inserted to database.1", timestamp)
 			return
 		} else {
+			// If there is more than one row that has fuelprice = 0
+			// First I'm going to slice the dataList to get the data I want.
+			// With slicing, Function will work faster because there will be less data to check.
+			// Then I'm going to update the data with the data I get from tppd.com.tr
 			dataList = dataList[len(dataList)-count:]
 			for v := range dataList {
 				if timestamp >= dataList[v].Date && timestamp < dataList[v+1].Date {
@@ -220,7 +226,6 @@ func InsertNewFuelPrices() {
 					if err != nil {
 						fmt.Println("Update has failed: ", err)
 					}
-					fmt.Println("New data's fuel price has been inserted to database.2", timestamp)
 					count--
 					break
 				}
