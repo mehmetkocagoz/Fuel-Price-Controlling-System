@@ -89,3 +89,50 @@ func UpdateUSDExchangeRate() {
 		}
 	}
 }
+
+func UpdateNewUSDExchangeRate() {
+	// Connect to database
+	database := database.Connect()
+	// Get usd exchange rate from bloomberght.com
+	usdExchangeRates := GetUSDExchangeRate()
+
+	var timestamp int64
+	var price float64
+	var fuelPrice float64
+	var dateColumn string
+	var usdExchangeRateColumn float64
+
+	// Count the number of rows that has exchange_column = 0
+	var count int
+	err := database.QueryRow("SELECT COUNT(*) from pricedata WHERE exchange_column=0").Scan(&count)
+	if err != nil {
+		fmt.Println("Query has failed: ", err)
+	}
+	// Slice the usdExchangeRates
+	// I know that data comes from API is in order.
+	// That's why I'm going to slice the usdExchangeRates.
+	usdExchangeRates = usdExchangeRates[len(usdExchangeRates)-count:]
+	// Take each row from the database
+	// Where exchange_column = 0 means that the data is not updated.
+	rows, err := database.Query("SELECT * from pricedata WHERE exchange_column = 0")
+	if err != nil {
+		fmt.Println("Query has failed: ", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		scanError := rows.Scan(&timestamp, &price, &fuelPrice, &dateColumn, &usdExchangeRateColumn)
+		if scanError != nil {
+			fmt.Println("Scan has failed: ", scanError)
+		}
+		for v := range usdExchangeRates {
+			if timestamp == usdExchangeRates[v].Timestamp {
+				_, updateError := database.Exec("UPDATE pricedata SET exchange_column = $1 WHERE timestamp = $2", usdExchangeRates[v].Price, timestamp)
+				if updateError != nil {
+					fmt.Println("Update has failed: ", updateError)
+				}
+				break
+			}
+		}
+	}
+}
