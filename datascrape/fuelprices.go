@@ -182,3 +182,49 @@ func InsertFuelPrices(dataList []FuelPrice) {
 		}
 	}
 }
+func InsertNewFuelPrices() {
+	db := database.Connect()
+	defer db.Close()
+	// Get the price list
+	dataList := ScrapeDateAndFuelPrices(*GetFuelPrices())
+	// Take
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) from pricedata WHERE fuelprice=0").Scan(&count)
+	if err != nil {
+		fmt.Println("Query has failed: ", err)
+	}
+	rows, err := db.Query("SELECT * from pricedata WHERE fuelprice=0 ORDER BY timestamp ASC")
+
+	for rows.Next() {
+		var timestamp int64
+		var brent float64
+		var diesel float64
+		var dateStr string
+		var exchange float64
+		err = rows.Scan(&timestamp, &brent, &diesel, &dateStr, &exchange)
+		if err != nil {
+			fmt.Println("Scan has failed: ", err)
+		}
+		if count == 1 {
+			_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[len(dataList)-1].Diesel, timestamp)
+			if err != nil {
+				fmt.Println("Update has failed: ", err)
+			}
+			fmt.Println("New data's fuel price has been inserted to database.1", timestamp)
+			return
+		} else {
+			dataList = dataList[len(dataList)-count:]
+			for v := range dataList {
+				if timestamp >= dataList[v].Date && timestamp < dataList[v+1].Date {
+					_, err := db.Exec("UPDATE pricedata SET fuelprice = $1 WHERE timestamp = $2", dataList[v].Diesel, timestamp)
+					if err != nil {
+						fmt.Println("Update has failed: ", err)
+					}
+					fmt.Println("New data's fuel price has been inserted to database.2", timestamp)
+					count--
+					break
+				}
+			}
+		}
+	}
+}
