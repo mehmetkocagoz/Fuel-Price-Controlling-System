@@ -80,29 +80,14 @@ func InsertNewBrentOilPrices() {
 	// Get the price list
 	priceList := GetBrentOilPrices()
 
-	// Get the data from database
-	rows, err := database.Query("SELECT timestamp FROM pricedata ORDER BY timestamp ASC")
-	if err != nil {
-		fmt.Println("Query has failed: ", err)
-	}
-	defer rows.Close()
-	var isNew bool
-	var v int
-	for rows.Next() {
+	for v := range priceList {
+		// Check if the data is already in the database
 		var timestamp int64
-		err = rows.Scan(&timestamp)
+		err := database.QueryRow("SELECT timestamp FROM pricedata WHERE timestamp = $1", priceList[v].Timestamp).Scan(&timestamp)
 		if err != nil {
-			fmt.Println("Scan has failed: ", err)
-		}
-		for v = range priceList {
-			if timestamp == priceList[v].Timestamp {
-				isNew = false
-				break
-			}
-			isNew = true
-		}
-		if isNew {
-			// Insert new data to database
+			// If there is no data with that timestamp, insert it to database
+			// Inserting timestamp and brentoilprice to database
+			// We need to insert fuelprice and exchange rate too.
 			_, err := database.Exec("INSERT INTO pricedata (timestamp, brentoilprice) VALUES ($1, $2)", priceList[v].Timestamp, priceList[v].Price)
 			if err != nil {
 				fmt.Println("Insert has failed: ", err)
