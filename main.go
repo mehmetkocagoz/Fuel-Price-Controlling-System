@@ -20,6 +20,10 @@ func databaseFiller() {
 func databaseUpdater() {
 	// First insert new brent oil prices
 	datascrape.InsertNewBrentOilPrices()
+	// Then insert new fuel prices
+	datascrape.InsertNewFuelPrices()
+	// Update usd exchange rate
+	datascrape.UpdateUSDExchangeRate()
 }
 func main() {
 	databaseUpdater()
