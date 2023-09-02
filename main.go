@@ -1,6 +1,8 @@
 package main
 
-import "mehmetkocagz/datascrape"
+import (
+	"mehmetkocagz/datascrape"
+)
 
 // This function will fill the database with the data we want.
 // This function will be used only once.
@@ -27,4 +29,12 @@ func databaseUpdater() {
 }
 func main() {
 	databaseUpdater()
+	/*cmd := exec.Command("python", "datafunctions/dataanalyze.py")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println("Error executing Python script:", err)
+		return
+	}
+	fmt.Println("A", string(out))
+	fmt.Println("Python script executed successfully.")*/
 }
