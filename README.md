@@ -1,7 +1,7 @@
 # Brentoil Project Purpose
-My primary objective is to establish a database encompassing Brent oil prices, diesel fuel prices, and the USD/TRY exchange rate. I will acquire this data by scraping information from various sources, including BloombergTH, TPDD.com.tr, and others. Subsequently, I intend to employ this dataset to predict fluctuations in fuel prices.
+My primary objective is to establish a database encompassing Brent oil prices, diesel fuel prices, and the USD/TRY exchange rate. I will acquire this data by scraping information from various sources, including Bloomberght, TPDD.com.tr, and others. Subsequently, I intend to employ this dataset to predict fluctuations in fuel prices.
 
-I have successfully achieved my initial goal. At this point, I am expanding my knowledge in data manipulation and data visualization. For the second phase of the project, I am considering the use of Python, but I have not made a final decision yet.
+I have successfully achieved my initial goal. At this point, I am expanding my knowledge in data manipulation and data visualization. For the second phase of the project, I am considering the use of Python, as Python offers robust capabilities for data analysis, machine learning, and a wide range of scientific computing tasks.
 ## How to setup the project
 Follow these steps to set up the project on your local machine:
 ### Clone the repository:
