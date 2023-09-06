@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"mehmetkocagz/datascrape"
+	"os/exec"
 )
 
 // This function will fill the database with the data we want.
@@ -27,14 +29,17 @@ func databaseUpdater() {
 	// Update usd exchange rate
 	datascrape.UpdateUSDExchangeRate()
 }
-func main() {
-	databaseUpdater()
-	/*cmd := exec.Command("python", "datafunctions/dataanalyze.py")
+func linearRegression() {
+	cmd := exec.Command("python", "datafunctions/linearRegression.py")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println("Error executing Python script:", err)
 		return
 	}
 	fmt.Println("A", string(out))
-	fmt.Println("Python script executed successfully.")*/
+	fmt.Println("Linear regression script executed successfully.")
+}
+
+func main() {
+	databaseUpdater()
 }
