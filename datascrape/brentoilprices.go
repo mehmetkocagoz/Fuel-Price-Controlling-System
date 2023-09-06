@@ -92,6 +92,7 @@ func InsertNewBrentOilPrices() {
 			if err != nil {
 				fmt.Println("Insert has failed: ", err)
 			}
+			fmt.Println("Function name => InsertNewBrentOilPrices \n New data inserted to database.")
 		}
 	}
 }
