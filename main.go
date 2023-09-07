@@ -20,6 +20,8 @@ func databaseFiller() {
 	datascrape.InsertFuelPrices(datascrape.ScrapeDateAndFuelPrices(*doc))
 	// Update usd exchange rate
 	datascrape.UpdateUSDExchangeRate()
+	// Get csv file from database
+	datascrape.CreateAndWritetoCSV()
 }
 func databaseUpdater() {
 	// First insert new brent oil prices
@@ -28,6 +30,8 @@ func databaseUpdater() {
 	datascrape.InsertNewFuelPrices()
 	// Update usd exchange rate
 	datascrape.UpdateUSDExchangeRate()
+	// Update csv file
+	datascrape.UpdateCSVFile()
 }
 func linearRegression() {
 	cmd := exec.Command("python", "datafunctions/linearRegression.py")
