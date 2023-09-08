@@ -192,6 +192,39 @@ func FillTableExchangeRate() {
 			}
 		}
 	}
+	// Some of the exchangerate datas are missing.
+	// So I will fill the missing ones with the previous day's price.
+	// Take each row from the database
+	exchangeRow, err := database.Query("SELECT timestamp FROM prices WHERE exchangerate=0 ORDER BY timestamp")
+	if err != nil {
+		fmt.Println("Query has failed: ", err)
+	}
+	defer exchangeRow.Close()
+	v := 0
+	for exchangeRow.Next() {
+		var timestamp int64
+
+		scanError := exchangeRow.Scan(&timestamp)
+		if scanError != nil {
+			fmt.Println("Scan has failed: ", scanError)
+		}
+		if usdExchangeRate[v].Timestamp >= timestamp {
+			_, err := database.Exec("UPDATE prices SET exchangerate = $1 WHERE timestamp = $2", usdExchangeRate[v].Price, timestamp)
+			if err != nil {
+				fmt.Println("Error inserting brentoilprice:", err)
+				return
+			}
+		} else {
+			for usdExchangeRate[v].Timestamp < timestamp {
+				v++
+			}
+			_, err := database.Exec("UPDATE prices SET exchangerate = $1 WHERE timestamp = $2", usdExchangeRate[v].Price, timestamp)
+			if err != nil {
+				fmt.Println("Error inserting brentoilprice:", err)
+				return
+			}
+		}
+	}
 
 }
 func writeHeader(file *os.File) {
