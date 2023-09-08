@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"mehmetkocagz/cleandata"
 	"mehmetkocagz/datascrape"
 	"os/exec"
 )
@@ -33,6 +34,16 @@ func databaseUpdater() {
 	// Update csv file
 	datascrape.UpdateCSVFile()
 }
+
+func cleanedDataFiller() {
+	cleandata.TableBuilder()
+	cleandata.FillTableTimestamp()
+	cleandata.FillTableBrentOilPrice()
+	cleandata.FillTableFuelPrice()
+	cleandata.FillTableExchangeRate()
+	cleandata.CreateAndWritetoCSV()
+}
+
 func linearRegression() {
 	cmd := exec.Command("python", "datafunctions/linearRegression.py")
 	out, err := cmd.CombinedOutput()
