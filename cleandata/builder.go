@@ -71,6 +71,40 @@ func FillTableBrentOilPrice() {
 			return
 		}
 	}
+	// Some of the brentoilprices are missing.
+	// So I will fill the missing ones with the previous day's price.
+	// Take each row from the database
+	rows, err := database.Query("SELECT timestamp from prices ORDER BY timestamp ASC")
+	if err != nil {
+		fmt.Println("Query has failed: ", err)
+	}
+	defer rows.Close()
+	v := 0
+	for rows.Next() {
+		var timestamp int64
+
+		scanError := rows.Scan(&timestamp)
+		if scanError != nil {
+			fmt.Println("Scan has failed: ", scanError)
+		}
+		if brentoilPrices[v].Timestamp >= timestamp {
+			_, err := database.Exec(insertQuery, brentoilPrices[v].Price, timestamp)
+			if err != nil {
+				fmt.Println("Error inserting brentoilprice:", err)
+				return
+			}
+		} else {
+			for brentoilPrices[v].Timestamp < timestamp {
+				v++
+			}
+			_, err := database.Exec(insertQuery, brentoilPrices[v].Price, timestamp)
+			if err != nil {
+				fmt.Println("Error inserting brentoilprice:", err)
+				return
+			}
+		}
+	}
+
 }
 
 func FillTableFuelPrice() {
