@@ -55,7 +55,7 @@
                     <div class="middle">
                         <div class="left">
                             <h3>BrentOil Prices</h3>
-                            <h2>$100,000</h2>
+                            <h2>{{.LastBrentPrice}}</h2>
                         </div>
                         <div class="progress">
                             <svg>
@@ -73,7 +73,7 @@
                     <div class="middle">
                         <div class="left">
                             <h3>USD/TRY</h3>
-                            <h2>$100,000</h2>
+                            <h2>{{.LastExchangeRate}}</h2>
                         </div>
                         <div class="progress">
                             <svg>
@@ -91,7 +91,7 @@
                     <div class="middle">
                         <div class="left">
                             <h3>Fuel Price</h3>
-                            <h2>$100,000</h2>
+                            <h2>{{.LastFuelPrice}}</h2>
                         </div>
                         <div class="progress">
                             <svg>
@@ -118,12 +118,15 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {{range .TableData}}
                         <tr>
-                            <td>A</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>3</td>
+                            <td>{{.PriceAnalysisID}}</td>
+                            <td>{{.ExchangeRate}}</td>
+                            <td>{{.BrentPrice}}</td>
+                            <td>{{.FuelPrice}}</td>
                         </tr>
+                        {{end}}
+
                     </tbody>
                 </table>
                 <a href="#">Show All</a>
@@ -153,28 +156,28 @@
                <div class="updates">
                 <div class="update">
                     <div class="profile-photo">
-                        <img src="/assests/images/profile.jpg">
+                        <img src="/assests/images/brent.jpg">
                     </div>
                     <div class="message">
-                        <p><b>Mike Tyson</b>received his order</p>
+                        <p><b>Brent Petrol</b><span>{{.LastBrentPrice}}</span></p>
                         <small class="text-muted">2 Minutes Ago</small>
                     </div>
                 </div>
                 <div class="update">
                     <div class="profile-photo">
-                        <img src="/assests/images/profile.jpg">
+                        <img src="/assests/images/diesel.jpg">
                     </div>
                     <div class="message">
-                        <p><b>Mike Tyson</b>received his order</p>
+                        <p><b>Fuel Price</b><span>{{.LastFuelPrice}}</span></p>
                         <small class="text-muted">2 Minutes Ago</small>
                     </div>
                 </div>
                 <div class="update">
                     <div class="profile-photo">
-                        <img src="/assests/images/profile.jpg">
+                        <img src="/assests/images/dolar.jpg">
                     </div>
                     <div class="message">
-                        <p><b>Mike Tyson</b>received his order</p>
+                        <p><b>USD/TRY</b><span>{{.LastExchangeRate}}</span></p>
                         <small class="text-muted">2 Minutes Ago</small>
                     </div>
                 </div>
@@ -184,40 +187,40 @@
                 <h2>Recent Analytics</h2>
                 <div class="price brent">
                     <div class="icon">
-                        <span class="material-icons-sharp">shopping_cart</span>
+                        <span class="material-icons-sharp">inventory_2</span>
                     </div>
                     <div class="right">
                         <div class="info">
                             <h3>BRENT OIL</h3>
                             <small class="text-muted">Last 24 Hours</small>
                         </div>
-                        <h5 class="success">+39%</h3>
+                        <h5 class="success">{{.BrentPriceRate}}</h3>
                         <h3>3849</h3>
                     </div>
                 </div>
                 <div class="price exchange">
                     <div class="icon">
-                        <span class="material-icons-sharp">local_mall</span>
+                        <span class="material-icons-sharp">monetization_on</span>
                     </div>
                     <div class="right">
                         <div class="info">
                             <h3>USD/TRY</h3>
                             <small class="text-muted">Last 24 Hours</small>
                         </div>
-                        <h5 class="danger">-39%</h3>
+                        <h5 class="danger">{{.ExchangeRateRate}}</h3>
                         <h3>1100</h3>
                     </div>
                 </div>
                 <div class="price fuel">
                     <div class="icon">
-                        <span class="material-icons-sharp">person</span>
+                        <span class="material-icons-sharp">inventory_2</span>
                     </div>
                     <div class="right">
                         <div class="info">
                             <h3>FUEL DIESEL</h3>
                             <small class="text-muted">Last 24 Hours</small>
                         </div>
-                        <h5 class="success">+39%</h3>
+                        <h5 class="success">{{.FuelPriceRate}}</h3>
                         <h3>849</h3>
                     </div>
                 </div>
