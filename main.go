@@ -4,7 +4,12 @@ import (
 	"fmt"
 	"mehmetkocagz/cleandata"
 	"mehmetkocagz/datascrape"
+	"mehmetkocagz/handlers"
+	"net/http"
 	"os/exec"
+	"time"
+
+	"github.com/gorilla/mux"
 )
 
 // This function will fill the database with the data we want.
@@ -55,6 +60,31 @@ func linearRegression() {
 	fmt.Println("Linear regression script executed successfully.")
 }
 
+func runServer() {
+	r := mux.NewRouter()
+	fs := http.FileServer(http.Dir("./assests/"))
+	r.PathPrefix("/assests").Handler(http.StripPrefix("/assests", fs))
+
+	// Home page
+	homeRouter := r.Methods("GET").Subrouter()
+	homeRouter.HandleFunc("/", handlers.ServeHome)
+
+	// Create a new server
+	srv := &http.Server{
+		Addr:         ":9090",
+		Handler:      r,
+		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	fmt.Println("Server is running on port 9090.")
+	err := srv.ListenAndServe()
+	if err != nil {
+		fmt.Println("Error starting server:", err)
+	}
+}
+
 func main() {
-	databaseUpdater()
+	runServer()
 }
