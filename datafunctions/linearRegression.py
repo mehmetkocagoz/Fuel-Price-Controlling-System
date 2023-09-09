@@ -26,7 +26,7 @@ print('RMSE:',RMSE)
 
 
 dataFrame2 = pd.read_csv("cleanData.csv")
-print(dataFrame.corr(method="pearson",numeric_only=True))
+print(dataFrame2.corr(method="pearson",numeric_only=True))
 x2 = dataFrame2[['BrentOilPrice','USD/TRY']]
 y2 = dataFrame2['FuelPrice']
 X2_train, X2_test, y2_train, y2_test = train_test_split(x2, y2, test_size=0.2, random_state=101)
