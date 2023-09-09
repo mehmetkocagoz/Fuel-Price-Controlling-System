@@ -365,3 +365,148 @@ main .last-data a{
     margin-top: 1rem auto;
     color: var(--color-primary);
 }
+
+/* --------- RIGHT --------- */
+.right{
+    margin-top: 1.4rem;
+}
+
+.right .top{
+    display: flex;
+    justify-content: end;
+    gap: 2rem;
+}
+
+.right .top button{
+    display: none;
+}
+
+.right .theme-toggler{
+    background: var(--color-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 1.6rem;
+    width:4.2rem;
+    cursor: pointer;
+    border-radius: var(--border-radius-1);
+}
+
+.right .theme-toggler span{
+    font-size: 1.2rem;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.right .theme-toggler span.active{
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--border-radius-1);
+}
+
+.right .top .profile{
+    display: flex;
+    gap: 2rem;
+    text-align: right;
+}
+
+/* --------- RECENT UPDATES --------- */
+.right .recent-updates{
+    margin-top: 1rem;
+}
+
+.right .recent-updates h2{
+    margin-bottom: 0.8rem;
+}
+
+.right .recent-updates .updates{
+    background: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--box-shadow);
+    transition: all 300ms ease;
+}
+
+.right .recent-updates .updates:hover{
+    box-shadow: none;
+}
+
+.right .recent-updates .updates .update{
+    display: grid;
+    grid-template-columns:2.6rem auto;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* --------- RIGHT ANALYTICS--------- */
+
+.right .price-analytics{
+    margin-top: 2rem;
+}
+
+.right .price-analytics h2{
+    margin-bottom: 0.8rem;
+}
+
+.right .price-analytics .price{
+    background: var(--color-white);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+    padding: 1.4rem var(--card-padding);
+    border-radius: var(--border-radius-3);
+    box-shadow: var(--box-shadow);
+    transition: all 300ms ease;
+}
+
+.right .price-analytics .price:hover{
+    box-shadow: none;
+}
+
+.right .price-analytics .price .right{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin: 0;
+    width: 100%;
+}
+
+.right .price-analytics .price .icon{
+    padding: 0.6rem;
+    color: var(--color-white);
+    border-radius: 50%;
+    background: var(--color-primary);
+    display: flex;
+}
+
+.right .price-analytics .price.offline .icon{
+    background: var(--color-danger);
+}
+
+.right .price-analytics .price.customers .icon{
+    background: var(--color-success);
+}
+
+.right .price-analytics .add-product{
+    background: transparent;
+    border: 2px dashed var(--color-primary);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4.2rem;
+}
+
+.right .price-analytics .add-product div{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.right .price-analytics .add-product div h3{
+    font-weight: 600;
+}
+
