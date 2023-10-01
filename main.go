@@ -29,6 +29,8 @@ func databaseFiller() {
 	// Get csv file from database
 	datascrape.CreateAndWritetoCSV()
 }
+
+// Every call updates existing database
 func databaseUpdater() {
 	// First insert new brent oil prices
 	datascrape.InsertNewBrentOilPrices()
