@@ -52,6 +52,37 @@ func FillTableTimestamp() {
 	fmt.Println("Timestamps inserted successfully.")
 }
 
+func UpdateTableTimestamp() {
+	database := database.Connect()
+	defer database.Close()
+
+	row := database.QueryRow("SELECT timestamp FROM prices ORDER BY timestamp DESC LIMIT 1")
+
+	var timestamp int64
+	scanError := row.Scan(&timestamp)
+
+	if scanError != nil {
+		fmt.Println("UpdateTableTimestamp Error : ", scanError)
+	}
+
+	loc, _ := time.LoadLocation("Europe/Istanbul")
+	timestampTime := time.Unix(timestamp/1000, 0)
+	startDate := timestampTime.Add(24 * time.Hour)
+	endDate := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, loc)
+
+	for startDate.Unix() < endDate.Unix() {
+		insertQuery := `
+		INSERT INTO prices (timestamp) VALUES ($1)
+		`
+		_, err := database.Exec(insertQuery, startDate.Unix()*1000)
+		if err != nil {
+			fmt.Println("Error inserting timestamp:", err)
+			return
+		}
+		startDate = startDate.AddDate(0, 0, 1)
+	}
+}
+
 func FillTableBrentOilPrice() {
 	// Connect to database
 	database := database.Connect()
@@ -107,6 +138,52 @@ func FillTableBrentOilPrice() {
 
 }
 
+func UpdateTableBrentOilPrice() {
+	// Connect to database
+	database := database.Connect()
+	defer database.Close()
+
+	// Get brentoilprices from bloomberght.com
+	brentoilPrices := datascrape.GetBrentOilPrices()
+	var databaseHolder []datascrape.BrentOilPrice
+
+	rows, err := database.Query("SELECT timestamp,brentoilprice from prices ORDER BY timestamp DESC LIMIT 10")
+	defer rows.Close()
+	if err != nil {
+		fmt.Println("Update table brent oil price error ==> ", err)
+	}
+	var timestamp int64
+	var brentoilprice float64
+	for rows.Next() {
+		rows.Scan(&timestamp, &brentoilprice)
+
+		dataPoint := datascrape.BrentOilPrice{
+			Timestamp: timestamp,
+			Price:     brentoilprice,
+		}
+		databaseHolder = append(databaseHolder, dataPoint)
+	}
+
+	for v := len(databaseHolder) - 1; v <= 0; v-- {
+		fmt.Println(databaseHolder[v].Price)
+		if databaseHolder[v].Price == 0 {
+			matchFound := false
+			for a := range brentoilPrices {
+				fmt.Println(a)
+				if brentoilPrices[a].Timestamp == databaseHolder[v].Timestamp {
+					matchFound = true
+					database.Exec("UPDATE prices SET brentoilprice = $1 WHERE timestamp = $2", brentoilPrices[a].Price, brentoilPrices[a].Timestamp)
+					databaseHolder[v].Price = brentoilPrices[a].Price
+					break
+				}
+			}
+			if !matchFound {
+				database.Exec("UPDATE prices SET brentoilprice = $1 WHERE timestamp = $2", databaseHolder[v+1].Price, databaseHolder[v].Timestamp)
+			}
+		}
+	}
+}
+
 func FillTableFuelPrice() {
 	// Connect to database
 	database := database.Connect()
@@ -153,6 +230,10 @@ func FillTableFuelPrice() {
 			}
 		}
 	}
+}
+
+func UpdateTableFuelPrice() {
+
 }
 
 func FillTableExchangeRate() {
@@ -227,6 +308,10 @@ func FillTableExchangeRate() {
 	}
 
 }
+
+func UpdateTableExchangeRate() {
+
+}
 func writeHeader(file *os.File) {
 	header := []string{"BrentOilPrice", "FuelPrice", "USD/TRY"}
 	for _, v := range header {
@@ -262,5 +347,34 @@ func CreateAndWritetoCSV() {
 			panic(scanError)
 		}
 		file.WriteString(strconv.FormatFloat(price, 'f', -1, 64) + "," + strconv.FormatFloat(fuelPrice, 'f', -1, 64) + "," + strconv.FormatFloat(usdExchangeRateColumn, 'f', -1, 64) + "\n")
+	}
+}
+
+func UpdateCSV() {
+	//Connect to database
+	database := database.Connect()
+
+	rows, _ := database.Query("SELECT * FROM prices ORDER BY timestamp ASC")
+	defer rows.Close()
+
+	file, _ := os.OpenFile("cleanData.csv", os.O_RDWR, 0666)
+	defer file.Close()
+
+	// Let's delete the old data in the file
+	file.Truncate(0)
+
+	// Write the header
+	writeHeader(file)
+
+	for rows.Next() {
+		var timestamp int64
+		var brentPrice float64
+		var fuelPrice float64
+		var usdExchangeRateColumn float64
+		scanError := rows.Scan(&timestamp, &brentPrice, &fuelPrice, &usdExchangeRateColumn)
+		if scanError != nil {
+			panic(scanError)
+		}
+		file.WriteString(strconv.FormatFloat(brentPrice, 'f', -1, 64) + "," + strconv.FormatFloat(fuelPrice, 'f', -1, 64) + "," + strconv.FormatFloat(usdExchangeRateColumn, 'f', -1, 64) + "\n")
 	}
 }
