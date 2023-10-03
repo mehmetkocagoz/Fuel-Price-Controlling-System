@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Responsive Analytics</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+        <link rel="stylesheet" href="/assests/css/analytic.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+
+    </head>
+    <body>
+        <div class="container">
+            <aside>
+                <div class="top">
+                    <div class="logo">
+                        <img src="/assests/images/logo.jpg" alt="logo">
+                        <h2>Data<span class="danger">Collector</span></h2>
+                    </div>
+                    <div class="close" id="close-btn">
+                        <span class="material-icons-sharp">close</span>
+                    </div>
+                </div>
+    
+                <div class="sidebar">
+                    <a href="index.html">
+                        <span class="material-icons-sharp">grid_view</span>
+                        <h3>Dashboard</h3>
+                    </a>
+                    <a href="analytic.html" class="active">
+                        <span class="material-icons-sharp">insights</span>
+                        <h3>Analytics</h3>
+                    </a>
+                    <a href="#">
+                        <span class="material-icons-sharp">grid_view</span>
+                        <h3>Predictor</h3>
+                    </a>
+                    <a href="#">
+                        <span class="material-icons-sharp">mail_outline</span>
+                        <h3>Messages</h3>
+                        <span class="message_count">24</span>
+                    </a>
+                    <a href="#">
+                        <span class="material-icons-sharp">settings</span>
+                        <h3>Settings</h3>
+                    </a>
+                </div>
+            </aside>
+            <main>
+                <div class="chartsBx">
+
+                    <div class="chart">
+                        <canvas id="brentLine"></canvas>
+                    </div>
+
+                    <div class="chart">
+                        <canvas id="exchangeLine"></canvas>
+                    </div>
+
+                    <div class="chart">
+                        <canvas id="fuelLine"></canvas>
+                    </div>
+                    <div class="chart">
+                        
+                    </div>
+                </div>
+            </main>
+        </div>
+        <div>
+          <script>
+            const brentLine = document.getElementById('brentLine');
+            const exchangeLine = document.getElementById('exchangeLine')
+            const fuelLine = document.getElementById('fuelLine')
+
+            new Chart(brentLine, {
+              type: 'line',
+              data: {
+                labels: ['Purple', 'Orange'],
+                datasets: [{
+                  label: 'Brent Oil',
+                  data: [ 2, 3],
+                  fill: true,
+                  borderColor: 'rgb(75, 192, 192)',
+                  borderWidth: 1
+                }]
+              } 
+            });
+            new Chart(exchangeLine, {
+              type: 'line',
+              data: {
+                labels: ['Red', 'Blue'],
+                datasets: [{
+                  label: 'USD / TRY',
+                  data: [12, 19],
+                  fill: true,
+                  borderColor: 'rgb(75, 192, 192)',
+                  borderWidth: 1
+                }]
+              } 
+            });
+            new Chart(fuelLine, {
+              type: 'line',
+              data: {
+                labels: [ 'Yellow', 'Purple'],
+                datasets: [{
+                  label: 'Brent Oil',
+                  data: [ 5, 2],
+                  fill: true,
+                  borderColor: 'rgb(75, 192, 192)',
+                  borderWidth: 1
+                }]
+              } 
+            });
+          </script>
+          
+    </body>
+</html>
