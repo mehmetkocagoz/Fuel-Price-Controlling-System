@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mehmetkocagz/cleandata"
 	"mehmetkocagz/datascrape"
+	"mehmetkocagz/fileoperations"
 	"mehmetkocagz/handlers"
 	"net/http"
 	"os/exec"
@@ -27,7 +28,7 @@ func databaseFiller() {
 	// Update usd exchange rate
 	datascrape.UpdateUSDExchangeRate()
 	// Get csv file from database
-	datascrape.CreateAndWritetoCSV()
+	fileoperations.CreateAndWritetoCSV()
 }
 func databaseUpdater() {
 	// First insert new brent oil prices
@@ -37,7 +38,7 @@ func databaseUpdater() {
 	// Update usd exchange rate
 	datascrape.UpdateUSDExchangeRate()
 	// Update csv file
-	datascrape.UpdateCSVFile()
+	fileoperations.UpdateCSVFile()
 }
 
 func cleanedDataFiller() {
@@ -47,6 +48,14 @@ func cleanedDataFiller() {
 	cleandata.FillTableFuelPrice()
 	cleandata.FillTableExchangeRate()
 	cleandata.CreateAndWritetoCSV()
+}
+
+func cleanedDataUpdater() {
+	cleandata.UpdateTableTimestamp()
+	cleandata.UpdateTableBrentOilPrice()
+	cleandata.UpdateTableFuelPrice()
+	cleandata.UpdateTableExchangeRate()
+	cleandata.UpdateCSV()
 }
 
 func linearRegression() {
@@ -69,6 +78,10 @@ func runServer() {
 	homeRouter := r.Methods("GET").Subrouter()
 	homeRouter.HandleFunc("/", handlers.ServeHome)
 
+	// Analysis Chart page
+	analysisRouter := r.Methods("GET").Subrouter()
+	analysisRouter.HandleFunc("/analytic.html", handlers.ServeAnalysis)
+
 	// Create a new server
 	srv := &http.Server{
 		Addr:         ":9090",
@@ -86,5 +99,10 @@ func runServer() {
 }
 
 func main() {
-	runServer()
+	//databaseUpdater()
+	//runServer()
+
+	cleandata.UpdateTableTimestamp()
+	cleandata.UpdateTableBrentOilPrice()
+	cleanedDataFiller()
 }
