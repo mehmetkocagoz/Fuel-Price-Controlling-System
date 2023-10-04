@@ -79,6 +79,9 @@ func UpdateTableTimestamp() {
 			fmt.Println("Error inserting timestamp:", err)
 			return
 		}
+		//Notify terminal
+		fmt.Println("Added date ", startDate)
+
 		startDate = startDate.AddDate(0, 0, 1)
 	}
 }
@@ -145,42 +148,42 @@ func UpdateTableBrentOilPrice() {
 
 	// Get brentoilprices from bloomberght.com
 	brentoilPrices := datascrape.GetBrentOilPrices()
-	var databaseHolder []datascrape.BrentOilPrice
 
-	rows, err := database.Query("SELECT timestamp,brentoilprice from prices ORDER BY timestamp DESC LIMIT 10")
+	rows, err := database.Query("SELECT timestamp,brentoilprice from prices ORDER BY timestamp ASC")
 	defer rows.Close()
 	if err != nil {
 		fmt.Println("Update table brent oil price error ==> ", err)
 	}
 	var timestamp int64
 	var brentoilprice float64
+	var oldbrentoilprice float64
+	var isFound bool
+
 	for rows.Next() {
+
+		isFound = false
 		rows.Scan(&timestamp, &brentoilprice)
 
-		dataPoint := datascrape.BrentOilPrice{
-			Timestamp: timestamp,
-			Price:     brentoilprice,
-		}
-		databaseHolder = append(databaseHolder, dataPoint)
-	}
-
-	for v := len(databaseHolder) - 1; v <= 0; v-- {
-		fmt.Println(databaseHolder[v].Price)
-		if databaseHolder[v].Price == 0 {
-			matchFound := false
-			for a := range brentoilPrices {
-				fmt.Println(a)
-				if brentoilPrices[a].Timestamp == databaseHolder[v].Timestamp {
-					matchFound = true
-					database.Exec("UPDATE prices SET brentoilprice = $1 WHERE timestamp = $2", brentoilPrices[a].Price, brentoilPrices[a].Timestamp)
-					databaseHolder[v].Price = brentoilPrices[a].Price
-					break
+		if brentoilprice <= 0 {
+			for v := range brentoilPrices {
+				if brentoilPrices[v].Timestamp == timestamp {
+					database.Exec("Update prices SET brentoilprice = $1 WHERE timestamp = $2", brentoilPrices[v].Price, timestamp)
+					//Notify on terminal
+					fmt.Println("Brentoil Price updated with timestamp ==> ", timestamp)
+					isFound = true
+					oldbrentoilprice = brentoilPrices[v].Price
 				}
 			}
-			if !matchFound {
-				database.Exec("UPDATE prices SET brentoilprice = $1 WHERE timestamp = $2", databaseHolder[v+1].Price, databaseHolder[v].Timestamp)
+			if !isFound {
+				database.Exec("Update prices SET brentoilprice = $1 WHERE timestamp = $2", oldbrentoilprice, timestamp)
+				//Notify on terminal
+				fmt.Println("The brentoil price data was missing. 0 value replaced with previous day's data. Value ==> ", oldbrentoilprice)
 			}
 		}
+		if brentoilprice > 0 {
+			oldbrentoilprice = brentoilprice
+		}
+
 	}
 }
 
