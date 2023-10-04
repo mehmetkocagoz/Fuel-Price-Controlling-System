@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"mehmetkocagz/cleandata"
 	"mehmetkocagz/datascrape"
-	"mehmetkocagz/fileoperations"
 	"mehmetkocagz/handlers"
 	"net/http"
 	"os/exec"
@@ -27,8 +26,6 @@ func databaseFiller() {
 	datascrape.InsertFuelPrices(datascrape.ScrapeDateAndFuelPrices(*doc))
 	// Update usd exchange rate
 	datascrape.UpdateUSDExchangeRate()
-	// Get csv file from database
-	fileoperations.CreateAndWritetoCSV()
 }
 
 // Every call updates existing database
@@ -39,8 +36,6 @@ func databaseUpdater() {
 	datascrape.InsertNewFuelPrices()
 	// Update usd exchange rate
 	datascrape.UpdateUSDExchangeRate()
-	// Update csv file
-	fileoperations.UpdateCSVFile()
 }
 
 func cleanedDataFiller() {
@@ -49,7 +44,6 @@ func cleanedDataFiller() {
 	cleandata.FillTableBrentOilPrice()
 	cleandata.FillTableFuelPrice()
 	cleandata.FillTableExchangeRate()
-	cleandata.CreateAndWritetoCSV()
 }
 
 func cleanedDataUpdater() {
@@ -57,7 +51,6 @@ func cleanedDataUpdater() {
 	cleandata.UpdateTableBrentOilPrice()
 	cleandata.UpdateTableFuelPrice()
 	cleandata.UpdateTableExchangeRate()
-	cleandata.UpdateCSV()
 }
 
 func linearRegression() {
@@ -101,10 +94,7 @@ func runServer() {
 }
 
 func main() {
-	//databaseUpdater()
-	//runServer()
-
-	cleandata.UpdateTableTimestamp()
-	cleandata.UpdateTableBrentOilPrice()
-	cleanedDataFiller()
+	databaseUpdater()
+	cleanedDataUpdater()
+	runServer()
 }

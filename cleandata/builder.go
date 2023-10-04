@@ -378,7 +378,6 @@ func UpdateTableExchangeRate() {
 		if error != nil {
 			fmt.Println("Scanning error ==> ", error)
 		}
-		fmt.Println(exchangeRate)
 		if exchangeRate <= 0 {
 			for v := range usdExchangeRate {
 				if timestamp == usdExchangeRate[v].Timestamp {
