@@ -69,8 +69,7 @@ func UpdateTableTimestamp() {
 	timestampTime := time.Unix(timestamp/1000, 0)
 	startDate := timestampTime.Add(24 * time.Hour)
 	endDate := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 0, 0, 0, 0, loc)
-
-	for startDate.Unix() < endDate.Unix() {
+	for startDate.Unix() <= endDate.Unix() {
 		insertQuery := `
 		INSERT INTO prices (timestamp) VALUES ($1)
 		`
