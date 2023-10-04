@@ -71,7 +71,11 @@ func runServer() {
 
 	// Home page
 	homeRouter := r.Methods("GET").Subrouter()
+	homeRouter.HandleFunc("/index.html", handlers.ServeHome)
 	homeRouter.HandleFunc("/", handlers.ServeHome)
+
+	homePOSTRouter := r.Methods("POST").Subrouter()
+	homePOSTRouter.HandleFunc("/index.html", handlers.ServeHomeWithDate)
 
 	// Analysis Chart page
 	analysisRouter := r.Methods("GET").Subrouter()
