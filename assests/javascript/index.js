@@ -20,3 +20,10 @@ themeToggler.addEventListener("click", () => {
   themeToggler.querySelector('span:first-child').classList.toggle('active');
   themeToggler.querySelector('span:last-child').classList.toggle('active');
 });
+
+//For posting with date in index.html
+var dateInput = document.getElementById("selected-date");
+
+dateInput.addEventListener("change", function() {
+  document.getElementById("search-by-date").submit();
+});
