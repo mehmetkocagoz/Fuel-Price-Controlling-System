@@ -355,6 +355,52 @@ func FillTableExchangeRate() {
 }
 
 func UpdateTableExchangeRate() {
+	// Connect to database
+	database := database.Connect()
+	defer database.Close()
+
+	// Get usd exchange rate from bloomberght.com
+	usdExchangeRate := datascrape.GetUSDExchangeRate()
+
+	rows, err := database.Query("SELECT timestamp,exchangerate FROM prices ORDER BY timestamp ASC")
+	if err != nil {
+		fmt.Println("Error while executing select query ", err)
+	}
+
+	var timestamp int64
+	var exchangeRate float64
+	var isFound bool
+	var oldrate float64
+
+	for rows.Next() {
+		isFound = false
+		error := rows.Scan(&timestamp, &exchangeRate)
+		if error != nil {
+			fmt.Println("Scanning error ==> ", error)
+		}
+		fmt.Println(exchangeRate)
+		if exchangeRate <= 0 {
+			for v := range usdExchangeRate {
+				if timestamp == usdExchangeRate[v].Timestamp {
+					database.Exec("UPDATE prices SET exchangerate = $1 WHERE timestamp = $2", usdExchangeRate[v].Price, timestamp)
+					isFound = true
+					oldrate = usdExchangeRate[v].Price
+					//Notify on terminal
+					fmt.Println("Exchange rate has been updated. Value ==> ", usdExchangeRate[v].Timestamp)
+				}
+			}
+
+			if !isFound {
+				database.Exec("UPDATE prices SET exchangerate = $1 WHERE timestamp = $2", oldrate, timestamp)
+				//Notify on terminal
+				fmt.Println("Exchange rate has been updated with previous day's value. Value ==> ", oldrate)
+			}
+		}
+
+		if exchangeRate > 0 {
+			oldrate = exchangeRate
+		}
+	}
 
 }
 func writeHeader(file *os.File) {
