@@ -236,7 +236,49 @@ func FillTableFuelPrice() {
 }
 
 func UpdateTableFuelPrice() {
+	//First, need to know which fuel prices should be updated so..
+	database := database.Connect()
+	defer database.Close()
 
+	// Get fuelprices from tppd.com.tr
+	doc := *datascrape.GetFuelPrices()
+	fuelPriceList := datascrape.ScrapeDateAndFuelPrices(doc)
+
+	rows, err := database.Query("SELECT timestamp, fuelprice FROM prices ORDER BY timestamp ASC")
+	if err != nil {
+		fmt.Println("Error occured ==> ", err)
+	}
+	var timestamp int64
+	var fuelprice float64
+	var oldfuelprice float64
+	var isFound bool
+	for rows.Next() {
+		isFound = false
+		error := rows.Scan(&timestamp, &fuelprice)
+		if error != nil {
+			fmt.Println("Error occured while scanning ==> ", error)
+		}
+		// If fuelprice is 0 (bcz if not updated, it will be 0 in default), we need to update
+		if fuelprice <= 0 {
+			for v := range fuelPriceList {
+				if fuelPriceList[v].Date == timestamp {
+					database.Exec("UPDATE prices SET fuelprice = $1 WHERE timestamp = $2", fuelPriceList[v].Diesel, timestamp)
+					isFound = true
+					oldfuelprice = fuelPriceList[v].Diesel
+					//Notify on terminal
+					fmt.Println("Fuelprice has updated. Value ==> ", fuelPriceList[v].Diesel)
+				}
+			}
+			if !isFound {
+				database.Exec("UPDATE prices SET fuelprice = $1 WHERE timestamp = $2", oldfuelprice, timestamp)
+				//Notify on terminal
+				fmt.Println("Fuelprice has updated. Value ==> ", oldfuelprice)
+			}
+		}
+		if fuelprice > 0 {
+			oldfuelprice = fuelprice
+		}
+	}
 }
 
 func FillTableExchangeRate() {
