@@ -59,7 +59,7 @@ func ConvertToPriceAnalysisTable(paSlice []PriceAnalysis) []PriceAnalysisTable {
 
 	return patSlice
 }
-
+cdd
 func grabData() []PriceAnalysis {
 	db := database.Connect()
 	defer db.Close()
