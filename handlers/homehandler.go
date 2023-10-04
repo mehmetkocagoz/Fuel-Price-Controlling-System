@@ -8,9 +8,15 @@ import (
 )
 
 func ServeHome(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Home page served.")
 	var tmpl = template.Must(template.ParseFiles("template/index.html"))
 	dataAll := model.GrabTemplateData()
 	tmpl.Execute(w, dataAll)
+	fmt.Println("Home page served.")
+}
+
+func ServeHomeWithDate(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Date requested")
+	var tmpl = template.Must(template.ParseFiles("template/index.html"))
+	tmpl.Execute(w, nil)
 	fmt.Println("Home page served.")
 }
