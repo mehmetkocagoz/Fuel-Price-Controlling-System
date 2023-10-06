@@ -42,6 +42,25 @@ func GrabTemplateData() PriceAnalysisListData {
 	return priceAnalysisListData
 }
 
+func GrabTemplateDataWDate(selectedDateTimestamp int64) PriceAnalysisListData {
+	data := grabData()
+	var priceAnalysisListData PriceAnalysisListData
+	for v := range data {
+		if data[v].Timestamp == selectedDateTimestamp {
+			data = data[:v+1]
+			break
+		}
+	}
+	priceAnalysisListData.LastBrentPrice = data[len(data)-1].BrentPrice
+	priceAnalysisListData.LastFuelPrice = data[len(data)-1].FuelPrice
+	priceAnalysisListData.LastExchangeRate = data[len(data)-1].ExchangeRate
+	priceAnalysisListData.TableData = ConvertToPriceAnalysisTable(data[len(data)-6 : len(data)-1])
+	priceAnalysisListData.BrentPriceRate = (data[len(data)-1].BrentPrice - data[len(data)-2].BrentPrice) / data[len(data)-2].BrentPrice * 100
+	priceAnalysisListData.FuelPriceRate = (data[len(data)-1].FuelPrice - data[len(data)-2].FuelPrice) / data[len(data)-2].FuelPrice * 100
+	priceAnalysisListData.ExchangeRateRate = (data[len(data)-1].ExchangeRate - data[len(data)-2].ExchangeRate) / data[len(data)-2].ExchangeRate * 100
+	return priceAnalysisListData
+}
+
 func ConvertToPriceAnalysisTable(paSlice []PriceAnalysis) []PriceAnalysisTable {
 	patSlice := make([]PriceAnalysisTable, len(paSlice))
 	i := len(paSlice)
