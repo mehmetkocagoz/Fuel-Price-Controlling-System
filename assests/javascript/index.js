@@ -24,6 +24,15 @@ themeToggler.addEventListener("click", () => {
 //For posting with date in index.html
 var dateInput = document.getElementById("selected-date");
 
+// Create a new Date object representing today's date
+var today = new Date();
+
+// Format the date as "YYYY-MM-DD" for the input field
+var formattedDate = today.toISOString().split("T")[0];
+
+// Set the date input field's value to today's date
+dateInput.value = formattedDate;
+
 dateInput.addEventListener("change", function() {
   document.getElementById("search-by-date").submit();
 });
