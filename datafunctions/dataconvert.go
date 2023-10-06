@@ -54,3 +54,21 @@ func ConvertTimestamp(date string) int64 {
 	// Because the data I get from tppd.com.tr is 3 hours ahead of the data I get from bloomberght.com
 	return (t.Unix()*1000 - 10800000)
 }
+
+/*
+Use this function If all date information comes in string like "2023-10-20"
+*/
+func ConvertTimestampFormatYMD(date string) int64 {
+	layout := "2006-01-02"
+	// Parse the date string into a time.Time object
+	t, err := time.Parse(layout, date)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	// Subtract 3 hours to the parsed time
+	t = t.Add(-3 * time.Hour)
+	// Get the Unix timestamp in milliseconds
+	timestampMillis := t.UnixNano() / int64(time.Millisecond)
+
+	return timestampMillis
+}
