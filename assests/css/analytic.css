@@ -231,6 +231,7 @@ aside .sidebar .message_count{
     position: relative;
     width: 100%;
     min-height: 200px;
+    max-width: 720px;
     padding: 20px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -249,4 +250,51 @@ aside .sidebar .message_count{
 #myChart{
     width: 100%;
     height: 100%;
+}
+
+/* --------- RIGHT --------- */
+.right{
+    margin-top: 1.4rem;
+}
+
+.right .top{
+    display: flex;
+    justify-content: end;
+    gap: 2rem;
+}
+
+.right .top button{
+    display: none;
+}
+
+.right .theme-toggler{
+    background: var(--color-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 1.6rem;
+    width:4.2rem;
+    cursor: pointer;
+    border-radius: var(--border-radius-1);
+}
+
+.right .theme-toggler span{
+    font-size: 1.2rem;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.right .theme-toggler span.active{
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--border-radius-1);
+}
+
+.right .top .profile{
+    display: flex;
+    gap: 2rem;
+    text-align: right;
 }
