@@ -48,8 +48,8 @@
                 </div>
             </aside>
             <main>
+                <h1>Charts</h1>
                 <div class="chartsBx">
-
                     <div class="chart">
                         <canvas id="brentLine"></canvas>
                     </div>
@@ -61,32 +61,102 @@
                     <div class="chart">
                         <canvas id="fuelLine"></canvas>
                     </div>
-                    <div class="chart">
-                        
-                    </div>
                 </div>
             </main>
-        </div>
-        <div class="right">
-          <div class="top">
-            <button id="menu-btn">
-              <span class="material-icons-sharp">menu</span>
-            </button>
-            <div class="theme-toggler">
-              <span class="material-icons-sharp active">light_mode</span>
-              <span class="material-icons-sharp">dark_mode</span>
-            </div>
-            <div class="profile">
-              <div class="info">
-                <p>Hey, <b>Mehmet</b></p>
+            <div class="right">
+              <div class="top">
+                <button id="menu-btn">
+                  <span class="material-icons-sharp">menu</span>
+                </button>
+                <div class="theme-toggler">
+                  <span class="material-icons-sharp active">light_mode</span>
+                  <span class="material-icons-sharp">dark_mode</span>
+                </div>
+                <div class="profile">
+                  <div class="info">
+                    <p>Hey, <b>Mehmet</b></p>
+                  </div>
+                  <div class="profile-photo">
+                    <img src="/assests/images/profile.jpg">
+                  </div>
+                </div>
               </div>
-              <div class="profile-photo">
-                <img src="/assests/images/profile.jpg">
-              </div>
-            </div>
-          </div>
+              <div class="recent-updates">
+                <h2>Recent Updates</h2>
+                <div class="updates">
+                 <div class="update">
+                     <div class="profile-photo">
+                         <img src="/assests/images/brent.jpg">
+                     </div>
+                     <div class="message">
+                         <p><b>Brent Petrol</b><span>{{.LastBrentPrice}}</span></p>
+                         <small class="text-muted">2 Minutes Ago</small>
+                     </div>
+                 </div>
+                 <div class="update">
+                     <div class="profile-photo">
+                         <img src="/assests/images/diesel.jpg">
+                     </div>
+                     <div class="message">
+                         <p><b>Fuel Price</b><span>{{.LastFuelPrice}}</span></p>
+                         <small class="text-muted">2 Minutes Ago</small>
+                     </div>
+                 </div>
+                 <div class="update">
+                     <div class="profile-photo">
+                         <img src="/assests/images/dolar.jpg">
+                     </div>
+                     <div class="message">
+                         <p><b>USD/TRY</b><span>{{.LastExchangeRate}}</span></p>
+                         <small class="text-muted">2 Minutes Ago</small>
+                     </div>
+                 </div>
+                </div> 
+             </div>
+             <div class="price-analytics">
+                 <h2>Recent Analytics</h2>
+                 <div class="price brent">
+                     <div class="icon">
+                         <span class="material-icons-sharp">inventory_2</span>
+                     </div>
+                     <div class="right">
+                         <div class="info">
+                             <h3>BRENT OIL</h3>
+                             <small class="text-muted">Last 24 Hours</small>
+                         </div>
+                         <h5 class="success">{{.BrentPriceRate}}</h3>
+                         <h3>3849</h3>
+                     </div>
+                 </div>
+                 <div class="price exchange">
+                     <div class="icon">
+                         <span class="material-icons-sharp">monetization_on</span>
+                     </div>
+                     <div class="right">
+                         <div class="info">
+                             <h3>USD/TRY</h3>
+                             <small class="text-muted">Last 24 Hours</small>
+                         </div>
+                         <h5 class="danger">{{.ExchangeRateRate}}</h3>
+                         <h3>1100</h3>
+                     </div>
+                 </div>
+                 <div class="price fuel">
+                     <div class="icon">
+                         <span class="material-icons-sharp">inventory_2</span>
+                     </div>
+                     <div class="right">
+                         <div class="info">
+                             <h3>FUEL DIESEL</h3>
+                             <small class="text-muted">Last 24 Hours</small>
+                         </div>
+                         <h5 class="success">{{.FuelPriceRate}}</h3>
+                         <h3>849</h3>
+                     </div>
+                 </div>
+             </div>
+         </div>
         </div>
-        <div>
           <script>
             const brentLine = document.getElementById('brentLine');
             const exchangeLine = document.getElementById('exchangeLine')
