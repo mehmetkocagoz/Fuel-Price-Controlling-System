@@ -98,7 +98,6 @@ func runServer() {
 }
 
 func main() {
-	databaseUpdater()
 	cleanedDataUpdater()
 	runServer()
 }
