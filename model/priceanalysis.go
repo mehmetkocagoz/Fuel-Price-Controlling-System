@@ -32,13 +32,13 @@ type PriceAnalysisListData struct {
 func GrabTemplateData() PriceAnalysisListData {
 	data := grabData()
 	var priceAnalysisListData PriceAnalysisListData
-	priceAnalysisListData.LastBrentPrice = data[len(data)-1].BrentPrice
-	priceAnalysisListData.LastFuelPrice = data[len(data)-1].FuelPrice
-	priceAnalysisListData.LastExchangeRate = data[len(data)-1].ExchangeRate
-	priceAnalysisListData.TableData = ConvertToPriceAnalysisTable(data[len(data)-6 : len(data)-1])
-	priceAnalysisListData.BrentPriceRate = (data[len(data)-1].BrentPrice - data[len(data)-2].BrentPrice) / data[len(data)-2].BrentPrice * 100
-	priceAnalysisListData.FuelPriceRate = (data[len(data)-1].FuelPrice - data[len(data)-2].FuelPrice) / data[len(data)-2].FuelPrice * 100
-	priceAnalysisListData.ExchangeRateRate = (data[len(data)-1].ExchangeRate - data[len(data)-2].ExchangeRate) / data[len(data)-2].ExchangeRate * 100
+	priceAnalysisListData.LastBrentPrice = data[0].BrentPrice
+	priceAnalysisListData.LastFuelPrice = data[0].FuelPrice
+	priceAnalysisListData.LastExchangeRate = data[0].ExchangeRate
+	priceAnalysisListData.TableData = ConvertToPriceAnalysisTable(data[1:])
+	priceAnalysisListData.BrentPriceRate = (data[0].BrentPrice - data[1].BrentPrice) / data[1].BrentPrice * 100
+	priceAnalysisListData.FuelPriceRate = (data[0].FuelPrice - data[1].FuelPrice) / data[1].FuelPrice * 100
+	priceAnalysisListData.ExchangeRateRate = (data[0].ExchangeRate - data[1].ExchangeRate) / data[1].ExchangeRate * 100
 	return priceAnalysisListData
 }
 
@@ -81,7 +81,7 @@ func ConvertToPriceAnalysisTable(paSlice []PriceAnalysis) []PriceAnalysisTable {
 func grabData() []PriceAnalysis {
 	db := database.Connect()
 	defer db.Close()
-	rows, err := db.Query("SELECT * FROM prices order by timestamp ")
+	rows, err := db.Query("SELECT * FROM prices order by timestamp DESC LIMIT 6")
 	if err != nil {
 		panic(err.Error())
 	}
