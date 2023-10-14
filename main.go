@@ -81,6 +81,10 @@ func runServer() {
 	analysisRouter := r.Methods("GET").Subrouter()
 	analysisRouter.HandleFunc("/analytic.html", handlers.ServeAnalysis)
 
+	// Predictor page router
+	predictorRouter := r.Methods("GET").Subrouter()
+	predictorRouter.HandleFunc("/predictor.html", handlers.ServePredictor)
+
 	// Create a new server
 	srv := &http.Server{
 		Addr:         ":9090",
