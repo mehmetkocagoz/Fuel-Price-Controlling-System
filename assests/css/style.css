@@ -517,25 +517,6 @@ main .last-data a{
     background: var(--color-success);
 }
 
-.right .price-analytics .add-product{
-    background: transparent;
-    border: 2px dashed var(--color-primary);
-    color: var(--color-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 4.2rem;
-}
-
-.right .price-analytics .add-product div{
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-}
-.right .price-analytics .add-product div h3{
-    font-weight: 600;
-}
-
 /* --------- MEDIA QUERIES --------- */
 @media screen and (max-width: 1200px) {
     .container{
